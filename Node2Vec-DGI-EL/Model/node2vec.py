@@ -23,7 +23,11 @@ def Node2Vec_main(G,save,file1,file2,embedding_dimension,walk_length,num_walks,p
     G = G.to_undirected()
     node2vec  = Node2Vec(G, dimensions=embedding_dimension, walk_length=walk_length, num_walks=10, p=p, q=2, workers=workers)
     model = node2vec.fit(window=window)
-    embeddings = model.wv
+    
+    node_embeddings = {node: embeddings[node] for node in embeddings.index_to_key}
+    sorted_nodes = sorted(node_embeddings.keys(), key=lambda x: int(x))
+    sorted_embeddings_array = np.array([node_embeddings[node] for node in sorted_nodes])
+
     if save is True:
         save_embeddings_to_file(embeddings,file1,file2)
-    return embeddings.vectors
+    return sorted_embeddings_array
